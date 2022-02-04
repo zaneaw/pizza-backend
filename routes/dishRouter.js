@@ -180,7 +180,9 @@ dishRouter
         .then(
           (dish) => {
             if (dish != null) {
+              // no easy way to delete items from a sub-document...
               for (let i = dish.comments.length - 1; i >= 0; i--) {
+                // .id() doc link below ############
                 dish.comments.id(dish.comments[i]._id).remove();
               }
               dish.save().then(
@@ -241,6 +243,7 @@ dishRouter
     Dishes.findById(req.params.dishId)
       .then(
         (dish) => {
+          // dish.comments.id -> looks for a match in the comments object based on the req.params.commentId and then grabs the author to check the author Id
           if (
             req.user._id.equals(dish.comments.id(req.params.commentId).author)
           ) {
@@ -248,6 +251,8 @@ dishRouter
               dish != null &&
               dish.comments.id(req.params.commentId) != null
             ) {
+              // dish.comments.id -> looks for a match in the comments based on the req.params.commentId and then grabs the author to check the author Id
+              console.log("#### DISH.COMMENTS.ID THINGY: ", dish.comments);
               // workaround to modify an embedded document
               if (req.body.rating) {
                 dish.comments.id(req.params.commentId).rating = req.body.rating;
@@ -322,7 +327,6 @@ dishRouter
           } else {
             res.statusCode = 403;
             res.end("This is not your comment to delete!");
-            
           }
         },
         (err) => next(err)
@@ -331,3 +335,12 @@ dishRouter
   });
 
 module.exports = dishRouter;
+
+// IMPORTANT
+// https://mongoosejs.com/docs/subdocs.html#finding-a-subdocument
+// https://mongoosejs.com/docs/subdocs.html#finding-a-subdocument
+// https://mongoosejs.com/docs/subdocs.html#finding-a-subdocument
+
+// https://mongoosejs.com/docs/api.html#mongoosedocumentarray_MongooseDocumentArray-id
+// https://mongoosejs.com/docs/api.html#mongoosedocumentarray_MongooseDocumentArray-id
+// https://mongoosejs.com/docs/api.html#mongoosedocumentarray_MongooseDocumentArray-id
