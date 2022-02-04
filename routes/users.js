@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const authenticate = require("../authenticate");
+const cors = require("./cors");
 
 const User = require("../models/user");
 
@@ -12,6 +13,7 @@ router.use(bodyParser.json());
 //          /users
 router.get(
   "/",
+  cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, next) => {
@@ -32,7 +34,7 @@ router.get(
 /* if the user doesn't register properly, an error will be sent back
 and the auth will fail.
 */
-router.post("/signup", (req, res, next) => {
+router.post("/signup", cors.corsWithOptions, (req, res, next) => {
   User.register(
     new User({ username: req.body.username }),
     req.body.password,
@@ -68,16 +70,21 @@ router.post("/signup", (req, res, next) => {
 
 /* if there is any failure in the auth, the passport.authenticate func 
 will automatically send a reply to the client about the failure. */
-router.post("/login", passport.authenticate("local"), (req, res, next) => {
-  let token = authenticate.getToken({ _id: req.user._id });
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "application/json");
-  res.json({
-    success: true,
-    token: token,
-    status: "You are successfully logged in!",
-  });
-});
+router.post(
+  "/login",
+  cors.corsWithOptions,
+  passport.authenticate("local"),
+  (req, res, next) => {
+    let token = authenticate.getToken({ _id: req.user._id });
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/json");
+    res.json({
+      success: true,
+      token: token,
+      status: "You are successfully logged in!",
+    });
+  }
+);
 
 router.get("/logout", (req, res, next) => {
   // if someone is logged in
