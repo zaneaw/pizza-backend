@@ -1,17 +1,32 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const User = require("../models/user");
 const passport = require("passport");
 const authenticate = require("../authenticate");
+
+const User = require("../models/user");
 
 const router = express.Router();
 router.use(bodyParser.json());
 
 /* GET users listing. */
 //          /users
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
-});
+router.get(
+  "/",
+  authenticate.verifyUser,
+  authenticate.verifyAdmin,
+  (req, res, next) => {
+    User.find({})
+      .then(
+        (user) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json(user);
+        },
+        (err) => next(err)
+      )
+      .catch((err) => next(err));
+  }
+);
 
 //      /users/signup
 /* if the user doesn't register properly, an error will be sent back
@@ -36,8 +51,8 @@ router.post("/signup", (req, res, next) => {
         user.save((err, user) => {
           if (err) {
             res.statusCode = 500;
-            res.setHeader('Content-Type', 'application/json');
-            res.json({err:err});
+            res.setHeader("Content-Type", "application/json");
+            res.json({ err: err });
             return;
           }
           passport.authenticate("local")(req, res, () => {

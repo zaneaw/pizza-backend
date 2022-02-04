@@ -2,7 +2,7 @@ const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
-const logger = require("morgan");
+const morgan = require("morgan");
 const session = require("express-session");
 const FileStore = require("session-file-store")(session);
 const passport = require("passport");
@@ -37,19 +37,17 @@ let app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
-app.use(logger("dev"));
+app.use(morgan("tiny"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser("12345-67890-09876-54321"));
 
 app.use(passport.initialize());
 
-// can access these without being authenticated
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/", indexRouter);
+app.use("/users", usersRouter);
 app.use("/dishes", dishRouter);
 app.use("/leaders", leaderRouter);
 app.use("/promotions", promoRouter);
