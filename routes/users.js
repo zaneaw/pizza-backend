@@ -100,4 +100,23 @@ router.get("/logout", (req, res, next) => {
   }
 });
 
+// if get is successful the user is loaded into the req object
+router.get(
+  "/facebook/token",
+  passport.authenticate("facebook-token"),
+  (req, res) => {
+    if (req.user) {
+      // keeps the user active for whatever the duration is, facebook token no longer needed
+      let token = authenticate.getToken({ _id: req.user._id });
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/json");
+      res.json({
+        success: true,
+        token: token,
+        status: "You are successfully logged in!",
+      });
+    }
+  }
+);
+
 module.exports = router;
