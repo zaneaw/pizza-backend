@@ -35,5 +35,6 @@ const promoSchema = new Schema({
   timestamps: true,
 });
 
-let Promos = mongoose.model("Promo", promoSchema);
+const Promos = mongoose.model("Promo", promoSchema);
+
 module.exports = Promos;

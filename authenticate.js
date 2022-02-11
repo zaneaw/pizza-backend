@@ -8,7 +8,6 @@ const FacebookTokenStrategy = require("passport-facebook-token");
 
 const config = require("./config.js");
 
-
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
 // support for sessions in the passport module
 passport.serializeUser(User.serializeUser());
@@ -50,28 +49,32 @@ exports.verifyAdmin = (req, res, next) => {
   }
 };
 
-exports.facebookPassport = passport.use(new FacebookTokenStrategy({
-  clientID: config.facebook.clientId,
-  clientSecret: config.facebook.clientSecret
-  }, (accessToken, refreshToken, profile, done) => {
-    User.findOne({facebookId: profile.id}, (err, user) => {
-      if (err) {
-        return done(err, false);
-      } else if (!err && user !== null) {
-        return done(null, user);
-      } else {
-        user = new User({username: profile.displayName});
-        user.facebookId = profile.id;
-        user.firstname = profile.name.givenName;
-        user.lastname = profile.name.familyName;
-        user.save((err, user) => {
-          if (err) {
-            return done(err, false);
-          } else {
-            return done(null, user); 
-          }
-        })
-      }
-    })
-  }
-));
+exports.facebookPassport = passport.use(
+  new FacebookTokenStrategy(
+    {
+      clientID: config.facebook.clientId,
+      clientSecret: config.facebook.clientSecret,
+    },
+    (accessToken, refreshToken, profile, done) => {
+      User.findOne({ facebookId: profile.id }, (err, user) => {
+        if (err) {
+          return done(err, false);
+        } else if (!err && user !== null) {
+          return done(null, user);
+        } else {
+          user = new User({ username: profile.displayName });
+          user.facebookId = profile.id;
+          user.firstname = profile.name.givenName;
+          user.lastname = profile.name.familyName;
+          user.save((err, user) => {
+            if (err) {
+              return done(err, false);
+            } else {
+              return done(null, user);
+            }
+          });
+        }
+      });
+    }
+  )
+);
