@@ -36,16 +36,17 @@ server.on("listening", onListening);
 /**
  * Create HTTPS server.
  */
-let options = {
+const options = {
   key: fs.readFileSync(__dirname + "/private.key"),
   cert: fs.readFileSync(__dirname + "/certificate.pem"),
 };
 
-let secureServer = https.createServer(options, app);
+const secureServer = https.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
+
 secureServer.listen(app.get("secPort"), () => {
   console.log("Server listening on port ", app.get("secPort"));
 });
