@@ -103,33 +103,32 @@ commentRouter
           if (comment != null) {
             if (!comment.author.equals(req.user._id)) {
               let err = new Error(
-                "You are not authorized to modify this comment."
+                "You are not authorized to update this comment!"
               );
               err.status = 403;
               return next(err);
             }
             req.body.author = req.user._id;
-            Comments.findByIdAndUpdate(req.params.commentId)
-              .then(
-                (comment) => {
-                  $set: req.body;
-                },
-                { new: true }
-              )
-              .then(
-                (comment) => {
-                  Comments.findById(comment._id)
-                    .populate("author")
-                    .then((comment) => {
-                      res.statusCode = 200;
-                      res.setHeader("Content-Type", "application/json");
-                      res.json(comment);
-                    });
-                },
-                (err) => next(err)
-              );
+            Comments.findByIdAndUpdate(
+              req.params.commentId,
+              {
+                $set: req.body,
+              },
+              { new: true }
+            ).then(
+              (comment) => {
+                Comments.findById(comment._id)
+                  .populate("author")
+                  .then((comment) => {
+                    res.statusCode = 200;
+                    res.setHeader("Content-Type", "application/json");
+                    res.json(comment);
+                  });
+              },
+              (err) => next(err)
+            );
           } else {
-            err = new Error("Comment " + req.params.commentId + " not found!");
+            err = new Error("Comment " + req.params.commentId + " not found");
             err.status = 404;
             return next(err);
           }
@@ -138,7 +137,6 @@ commentRouter
       )
       .catch((err) => next(err));
   })
-
   .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Comments.findById(req.params.commentId)
       .then(
@@ -146,7 +144,7 @@ commentRouter
           if (comment != null) {
             if (!comment.author.equals(req.user._id)) {
               let err = new Error(
-                "You're not authorized to delete this comment!"
+                "You are not authorized to delete this comment!"
               );
               err.status = 403;
               return next(err);

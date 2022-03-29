@@ -16,7 +16,6 @@ router.options("*", cors.corsWithOptions, (req, res) => {
 //          /users
 router.get(
   "/",
-  cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, next) => {
@@ -37,7 +36,7 @@ router.get(
 /* if the user doesn't register properly, an error will be sent back
 and the auth will fail.
 */
-router.post("/signup", cors.corsWithOptions, (req, res, next) => {
+router.post("/signup", (req, res, next) => {
   User.register(
     new User({ username: req.body.username }),
     req.body.password,
@@ -71,7 +70,7 @@ router.post("/signup", cors.corsWithOptions, (req, res, next) => {
   );
 });
 
-router.post("/login", cors.corsWithOptions, (req, res, next) => {
+router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
     if (!user) {
@@ -131,7 +130,7 @@ router.get(
   }
 );
 
-router.get("/checkJWTtoken", cors.corsWithOptions, (req, res) => {
+router.get("/checkJWTtoken", (req, res) => {
   passport.authenticate("jwt", { session: false }, (err, user, info) => {
     if (err) return next(err);
 
