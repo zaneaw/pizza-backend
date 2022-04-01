@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("./cors");
 
-const Feedbacks = require("../models/feedback");
+const Feedback = require("../models/feedback");
 
 const feedbackRouter = express.Router();
 
@@ -14,7 +14,7 @@ feedbackRouter
         res.sendStatus(200);
     })
     .get(cors.cors, (req, res, next) => {
-        Feedbacks.find(req.query)
+        Feedback.find(req.query)
             .then(
                 (feedbacks) => {
                     res.statusCode = 200;
@@ -26,7 +26,7 @@ feedbackRouter
             .catch((err) => next(err));
     })
     .post(cors.corsWithOptions, (req, res, next) => {
-        Feedbacks.create(req.body)
+        Feedback.create(req.body)
             .then(
                 (feedback) => {
                     console.log("Feedback Created: ", feedback);
