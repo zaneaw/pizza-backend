@@ -46,7 +46,6 @@ router.post("/signup", cors.corsWithOptions, (req, res) => {
                 res.statusCode = 500;
                 res.setHeader("Content-Type", "application/json");
                 res.json({ err: err });
-                return;
             } else {
                 if (req.body.firstname) {
                     user.firstname = req.body.firstname;
